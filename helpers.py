@@ -1,0 +1,148 @@
+# -*- coding: utf-8 -*-
+import pickle
+import collections
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
+import matplotlib.ticker as ticker
+
+def getDataFrames(workDir, version, tracks, varsType, otherFile=False, pickleName=""):
+    fileName = workDir + 'dataFrames/'+ version+ "_all_" + varsType + "_dfs.pickle"
+    if otherFile: fileName = pickleName
+    with open(fileName, 'rb') as handle:
+        allDFsDict = pickle.load(handle)
+    trackDFsDict = collections.OrderedDict()
+    for i in range(len(tracks)):
+        trackDFsDict[tracks[i]] = allDFsDict[tracks[i]]
+    return trackDFsDict
+
+def getArray(track, dataFrames, varName):
+    df_track = dataFrames[track]
+    if varName == 'jet_trk_nPixSCT':
+        nPix = df_track['jet_trk_nPixHits']
+        nSCT = df_track['jet_trk_nSCTHits']
+        array = nPix + nSCT
+    elif varName == 'jet_trk_nsharedPixSCT':
+        nPix = df_track['jet_trk_nsharedPixHits']
+        nSCT = df_track['jet_trk_nsharedSCTHits']
+        array = nPix + nSCT
+    else: array = df_track[varName]
+    
+    return array
+
+def fetchArrays(dataFrames, varName):
+    arraysDict = collections.OrderedDict()
+    for track in dataFrames.keys():
+        tmpArray = getArray(track, dataFrames, varName)
+        tmpArray = tmpArray[~np.isnan(tmpArray)]
+        arraysDict[track] = tmpArray
+    return arraysDict
+
+def colourTracks():
+    colourDict = {
+            'nominal': "#000000",
+            'pseudo': "#17becf",
+            'ideal': "#ff7f0e",
+            'fakes_removed': "#2ca02c",
+            'fakes_removed_+_track_replaced': "#d62728",
+            'HF': "#9467bd",
+            'HF_+_track_replaced': "#e377c2",
+            'fake': "#bcbd22"
+    }
+    
+    return colourDict
+
+def getRatio(hist1,hist2):
+    hist = []
+    for i in range(len(hist1)):
+        if hist2[i] == 0:
+            if hist1[i] == 0: value = 1
+            else: value = 0
+        else: value = hist1[i]/hist2[i]
+        hist.append(value)
+    return hist
+
+def setStyle(width=600, height=550, label_size=9, my_dpi=100):
+    plt.rcParams['pdf.fonttype'] = 42
+    plt.rcParams['xtick.labelsize'] = label_size 
+    plt.rcParams['ytick.labelsize'] = label_size 
+    plt.rcParams['axes.labelsize'] = label_size 
+    fig = plt.figure(figsize=(600/my_dpi, 550/my_dpi), dpi=my_dpi)
+    return fig
+
+def configureHistRatioPads(varName, varLabel, yLabel, xMin, xMax):
+    fig = setStyle()
+    gs = gridspec.GridSpec(2,1 , height_ratios=[4,1])
+    ax1 = plt.subplot(gs[0])
+    ax2 = plt.subplot(gs[1])
+    fig.subplots_adjust(hspace=0.07)
+    fig.align_ylabels()
+    
+    # Settings for x and y-axis
+    ax1.xaxis.set_visible(False)
+    ax1.yaxis.set_minor_locator(ticker.AutoMinorLocator())
+    ax1.set_ylabel(yLabel, horizontalalignment='right', y=1.0)
+    ax1.set_xlim([xMin, xMax])
+    
+    ax2.set_ylabel("Ratio", horizontalalignment='right', y=1.0)
+    ax2.yaxis.set_minor_locator(ticker.AutoMinorLocator())
+    ax2.set_xlabel(varLabel, horizontalalignment='right', x=1.0)
+    ax2.set_xlim([xMin, xMax])
+    ax2.set_xticks(range(xMin,xMax))
+    ax2.xaxis.set_minor_locator(ticker.AutoMinorLocator())
+    ax2.xaxis.set_major_locator(ticker.MaxNLocator())
+    if 'n' in varName:
+        ax2.set_xticks(np.arange(xMin+0.5,xMax+0.5,1), minor=True)
+        ax2.set_xticklabels(np.arange(xMin,xMax), minor=True)
+        ax2.set_xticklabels([])
+        ax2.set_xticks([])
+        
+    return ax1, ax2
+
+
+def newDataFrames(dataFrames, varNames):
+    new_dfs = collections.OrderedDict()
+    for track in dataFrames.keys():
+        new_df = dataFrames[track].filter(varNames, axis=1)
+        new_dfs[track] = new_df
+    return new_dfs
+
+
+def getCutValues(jet_df, cutVarName, cutVarMin, cutVarMax, outVarName, outVarCut, npoints):
+    njets = len(jet_df.index)
+    print (jet_df)
+    #print(njets)
+    jet_df = jet_df[jet_df[cutVarName] >= cutVarMin]
+    jet_values = []
+    for i in range(npoints):
+        x = cutVarMax / npoints
+        cutValue = i * x
+        print (cutValue)
+        jetCut_df = jet_df[(jet_df[cutVarName] > cutValue) & (jet_df[outVarName] > outVarCut)]
+        print (jetCut_df)
+        jet_values.append(len(jetCut_df.index) / njets)
+        #jet_values.append(jetCut_df[outVarName].sum() / njets)
+
+    return jet_values
+
+
+def getROC(dataFrames, varNames, cutVarName, cutVarMin, cutVarMax, outVarName, outVarCut, npoints):
+    ROC_dfs = newDataFrames(dataFrames, varNames)
+    ROC_values = collections.OrderedDict()
+    for track in ROC_dfs.keys():
+        track_df = ROC_dfs[track]
+
+        jets = {"b": 5, "c": 4, "light": 0}
+        for jet in jets.keys():
+            jet_df = track_df[track_df['jet_LabDr_HadF'] == jets[jet]]
+            print (jet)
+            jet_values = getCutValues(jet_df, cutVarName, cutVarMin, cutVarMax, outVarName, outVarCut, npoints)
+            #if jet == "b": jet_values = np.array(jet_values)/292910
+            #if jet == "light": jet_values = np.array(jet_values) /540056
+            label = track + "_" + jet
+            ROC_values[label] = jet_values
+
+    return ROC_values
+
+
+
