@@ -47,7 +47,7 @@ def plotROCs(ROCValues, tracks, jet1, jet2):
     plt.text(0.03, 0.93, "ATLAS Internal", fontsize=9, transform=ax.transAxes, weight='bold', style='italic')
     plt.text(0.03, 0.89, "Vertices with at least 2 tracks", fontsize=9, transform=ax.transAxes)
 
-    plt.savefig(outDir + "/" + figName + ".png", bbox_inches='tight', pad_inches=0.04)
+    #plt.savefig(outDir + "/" + figName + ".png", bbox_inches='tight', pad_inches=0.04)
     plt.savefig(outDir + "/" + figName + ".pdf", bbox_inches='tight', pad_inches=0.04)
 
 

@@ -37,16 +37,16 @@ def plotHisto(dataFrames, varName, xMin, xMax, xBins, varLabel, yLabel):
         X = np.array([left,right]).T.flatten()
         Y = np.array([ratio,ratio]).T.flatten()
         ax2.plot(X,Y, color=colourDict[histKey], linewidth=1)
-    ax1.set_ylim([0, max(yMaxs)*1.4])
-    
+
+    ax1.set_ylim([0, max(yMaxs)*1.35])
     # Draw a line for legend
     handles, labels = ax1.get_legend_handles_labels()
     new_handles = [Line2D([], [], c=h.get_edgecolor()) for h in handles]
-    ax1.legend(loc="best", labelspacing=0.3, bbox_transform=ax1.transAxes, handles=new_handles, labels=labels, facecolor='none', edgecolor='none')
+    ax1.legend(loc='upper center', labelspacing=0.3, handles=new_handles, labels=labels, facecolor='none', edgecolor='none')
     
     plt.text(0.03, 0.93, "ATLAS Internal", fontsize=9, transform=ax1.transAxes, weight='bold', style='italic')
     
-    plt.savefig(outDir + "/" + figName +".png", bbox_inches='tight', pad_inches=0.04)
+    #plt.savefig(outDir + "/" + figName +".png", bbox_inches='tight', pad_inches=0.04)
     plt.savefig(outDir + "/" + figName +".pdf", bbox_inches='tight', pad_inches=0.04)
     
 def plotAllHistos(varDict, dataFrames, yLabel="Arbitrary units"):
