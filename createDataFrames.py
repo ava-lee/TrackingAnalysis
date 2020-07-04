@@ -22,17 +22,13 @@ def getDict(inDir, version, track, varsName):
     
     return varsDict
 
-def makeDataFrames(inDir, version, tracks, varsType):
-    dataFramesDict = collections.OrderedDict()
+def saveDataFrames(inDir, outDir, version, tracks, varsType):
+    dfs = collections.OrderedDict()
     for i in range(len(tracks)):
         varsDict = getDict(inDir, version, tracks[i], varsType)
         df = pandas.DataFrame.from_dict(varsDict)
-        dataFramesDict[tracks[i]] = df
-       
-    return dataFramesDict
+        dfs[tracks[i]] = df
 
-def saveDataFrames(inDir, outDir, version, tracks, varsType):
-    dfs = makeDataFrames(inDir, version, tracks, varsType)
     outName = outDir + "_" + varsType + "_dfs.pickle"
     with open(outName, 'wb') as handle:
         pickle.dump(dfs, handle, protocol=pickle.HIGHEST_PROTOCOL)
@@ -41,9 +37,10 @@ if __name__ == "__main__":
     inDir = args.workDir + 'trackDicts/' 
     version = args.version
     tracks = args.tracks.split(':') # get list of tracks
-    if args.tracks == 'nominal:pseudo:ideal:fakes_removed:fakes_removed_+_track_replaced:HF:HF_+_track_replaced':
-        outDir = args.workDir + 'dataFrames/' + version + "_all"
-    else: outDir = args.workDir + 'dataFrames/'+ version + "_" + args.tracks.replace(":","_")
+    outDir = args.workDir + 'dataFrames/'
     if not (os.path.isdir(outDir)): os.makedirs(outDir)
+    if args.tracks == 'nominal:pseudo:ideal:fakes_removed:fakes_removed_+_track_replaced:HF:HF_+_track_replaced':
+        outDir += version + "_all"
+    else: outDir = + "_" + args.tracks.replace(":","_")
     
     saveDataFrames(inDir, outDir, version, tracks, args.dict)

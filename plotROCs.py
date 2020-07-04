@@ -45,6 +45,7 @@ def plotROCs(ROCValues, tracks, jet1, jet2):
 
     plt.legend(bbox_to_anchor=[0.05, 0.6], loc='center left', labelspacing=0.3, facecolor='none', edgecolor='none')
     plt.text(0.03, 0.93, "ATLAS Internal", fontsize=9, transform=ax.transAxes, weight='bold', style='italic')
+    plt.text(0.03, 0.89, "Vertices with at least 2 tracks", fontsize=9, transform=ax.transAxes)
 
     plt.savefig(outDir + "/" + figName + ".png", bbox_inches='tight', pad_inches=0.04)
     plt.savefig(outDir + "/" + figName + ".pdf", bbox_inches='tight', pad_inches=0.04)
@@ -60,7 +61,7 @@ if __name__ == "__main__":
 
     jetVars = getDataFrames(args.workDir, version, tracks, "jetVars")
     ROCVars = ['jet_jf_sig3d', 'jet_jf_nvtx', 'jet_LabDr_HadF']
-    ROCValues = getROC(jetVars, ROCVars, 'jet_jf_sig3d', 0, 50, 'jet_jf_nvtx', 0, 50)
+    ROCValues = getROC(jetVars, ROCVars, 'jet_jf_sig3d', 0, 40, 'jet_jf_nvtx', 0, 50)
 
     plotROCs(ROCValues, tracks, "b", "light")
     plotROCs(ROCValues, tracks, "b", "c")

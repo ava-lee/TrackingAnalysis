@@ -23,9 +23,7 @@ def plotHisto(dataFrames, varName, xMin, xMax, xBins, varLabel, yLabel):
     ax1, ax2 = configureHistRatioPads(varName, varLabel, yLabel, xMin, xMax)
     yMaxs = []
     for histKey in histoDict.keys():
-        label = histKey
-        if '_+_' in label: label = label.replace('_+_', ', ')
-        label = ' '.join(label.split('_'))
+        label = ' '.join(histKey.split('_'))
         y, x, _ = ax1.hist(histoDict[histKey], bins=xBins, range=(xMin,xMax), density=True, color=colourDict[histKey], histtype='step', label=label)
         yMaxs.append(y.max())
         

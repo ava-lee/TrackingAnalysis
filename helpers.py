@@ -110,18 +110,13 @@ def newDataFrames(dataFrames, varNames):
 
 def getCutValues(jet_df, cutVarName, cutVarMin, cutVarMax, outVarName, outVarCut, npoints):
     njets = len(jet_df.index)
-    print (jet_df)
-    #print(njets)
     jet_df = jet_df[jet_df[cutVarName] >= cutVarMin]
     jet_values = []
     for i in range(npoints):
         x = cutVarMax / npoints
         cutValue = i * x
-        print (cutValue)
         jetCut_df = jet_df[(jet_df[cutVarName] > cutValue) & (jet_df[outVarName] > outVarCut)]
-        print (jetCut_df)
         jet_values.append(len(jetCut_df.index) / njets)
-        #jet_values.append(jetCut_df[outVarName].sum() / njets)
 
     return jet_values
 
@@ -135,10 +130,7 @@ def getROC(dataFrames, varNames, cutVarName, cutVarMin, cutVarMax, outVarName, o
         jets = {"b": 5, "c": 4, "light": 0}
         for jet in jets.keys():
             jet_df = track_df[track_df['jet_LabDr_HadF'] == jets[jet]]
-            print (jet)
             jet_values = getCutValues(jet_df, cutVarName, cutVarMin, cutVarMax, outVarName, outVarCut, npoints)
-            #if jet == "b": jet_values = np.array(jet_values)/292910
-            #if jet == "light": jet_values = np.array(jet_values) /540056
             label = track + "_" + jet
             ROC_values[label] = jet_values
 
