@@ -2,13 +2,17 @@
 import pickle
 import collections
 import numpy as np
+import os
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import matplotlib.ticker as ticker
 
-def getDataFrames(workDir, version, tracks, varsType, otherFile=False, pickleName=""):
+def getDataFrames(workDir, version, tracks, varsType, dictName=""):
     fileName = workDir + 'dataFrames/'+ version+ "_all_" + varsType + "_dfs.pickle"
-    if otherFile: fileName = pickleName
+    if os.path.exists(fileName) == False:
+        fileName = workDir + 'dataFrames/' + version + "_" + '_'.join(tracks) + "_" + varsType + "_dfs.pickle"
+    if dictName != "":
+        fileName = workDir + 'dataFrames/' + dictName
     with open(fileName, 'rb') as handle:
         allDFsDict = pickle.load(handle)
     trackDFsDict = collections.OrderedDict()
@@ -38,19 +42,26 @@ def fetchArrays(dataFrames, varName):
         arraysDict[track] = tmpArray
     return arraysDict
 
-def colourTracks():
-    colourDict = {
-            'nominal': "#000000",
-            'pseudo': "#17becf",
-            'ideal': "#ff7f0e",
-            'fakes_removed': "#2ca02c",
-            'fakes_removed_+_track_replaced': "#d62728",
-            'HF': "#9467bd",
-            'HF_+_track_replaced': "#e377c2",
-            'fake': "#bcbd22"
+def styleTracks():
+    styleDict = {
+            'nom': ["#000000", "Nominal"],
+            'pseudo': ["#17becf", "Pseudo"],
+            'ideal': ["#ff7f0e", "Ideal"],
+            'RF75': ["#2ca02c", "Nominal, no fakes"],
+            'loose': ["#1f77b4", "Nominal, removing fakes with_MVA (loose)"],
+            'tight': ["#8c564b", "Nominal, removing fakes with MVA (tight)"],
+            'nom_replaceHFWithTruth': ["#9467bd", "Nominal, replace HF with pseudo"],
+            'nom_replaceFRAGWithTruth': ["#7f7f7f", "Nominal, replace HF with pseudo"],
+            'nom_replaceFRAGHFWithTruth': ["#bcbd22", "Nominal, replace FRAG+HF with pseudo"],
+            'nom_replaceFRAGHFGEANTWithTruth': ["#2ca02c", "Nominal, replace FRAG+HF+GEANT with pseudo"],
+            'nom_replaceWithTruth': ["#e377c2", "Nominal, replace with pseudo"],
+            #'fakes_removed_+_track_replaced': "#d62728",
+            #'HF': "#9467bd",
+            #'HF_+_track_replaced': "#e377c2",
+            #'fake': "#bcbd22",
+            #'pseudo_not_reco': "#7f7f7f"
     }
-    
-    return colourDict
+    return styleDict
 
 def getRatio(hist1,hist2):
     hist = []
@@ -99,14 +110,12 @@ def configureHistRatioPads(varName, varLabel, yLabel, xMin, xMax):
         
     return ax1, ax2
 
-
 def newDataFrames(dataFrames, varNames):
     new_dfs = collections.OrderedDict()
     for track in dataFrames.keys():
         new_df = dataFrames[track].filter(varNames, axis=1)
         new_dfs[track] = new_df
     return new_dfs
-
 
 def getCutValues(jet_df, cutVarName, cutVarMin, cutVarMax, outVarName, outVarCut, npoints):
     njets = len(jet_df.index)
@@ -119,7 +128,6 @@ def getCutValues(jet_df, cutVarName, cutVarMin, cutVarMax, outVarName, outVarCut
         jet_values.append(len(jetCut_df.index) / njets)
 
     return jet_values
-
 
 def getROC(dataFrames, varNames, cutVarName, cutVarMin, cutVarMax, outVarName, outVarCut, npoints):
     ROC_dfs = newDataFrames(dataFrames, varNames)
@@ -135,6 +143,3 @@ def getROC(dataFrames, varNames, cutVarName, cutVarMin, cutVarMax, outVarName, o
             ROC_values[label] = jet_values
 
     return ROC_values
-
-
-

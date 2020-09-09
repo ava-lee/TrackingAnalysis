@@ -12,8 +12,8 @@ parser.add_argument('-t', "--tracks", dest='tracks',
                     help='input track collections')
 parser.add_argument('-w', "--workDir", dest='workDir', default='/Users/avalee/TrackingAnalysis/',
                     help='working directory')
+parser.add_argument('-f', "--fileDict", dest="dictName", default="", help="filename of dataframes dictionary")
 args = parser.parse_args()
-
 
 def configurePlots(jet1, jet2):
     fig = setStyle(500, 400)
@@ -31,7 +31,6 @@ def configurePlots(jet1, jet2):
 
     return ax
 
-
 def plotROCs(ROCValues, tracks, jet1, jet2):
     figName = "ROC_" + jet1 + jet2
     ax = configurePlots(jet1, jet2)
@@ -39,27 +38,27 @@ def plotROCs(ROCValues, tracks, jet1, jet2):
     for i in range(len(tracks)):
         key1 = tracks[i] + "_" + jet1
         key2 = tracks[i] + "_" + jet2
-        label = tracks[i]
-        label = ' '.join(label.split('_'))
-        plt.plot(ROCValues[key1], ROCValues[key2], color=colourDict[tracks[i]], label=label)
+        if len(styleDict[tracks[i]]) > 1: label = styleDict[tracks[i]][1]
+        else: label = ' '.join(tracks[i].split('_'))
+        plt.plot(ROCValues[key1], ROCValues[key2], color=styleDict[tracks[i]][0], label=label)
 
-    plt.legend(bbox_to_anchor=[0.05, 0.6], loc='center left', labelspacing=0.3, facecolor='none', edgecolor='none')
+    plt.legend(bbox_to_anchor=[0.03, 0.65], loc='center left', labelspacing=0.3, facecolor='none', edgecolor='none', prop={'size': 8})
     plt.text(0.03, 0.93, "ATLAS Internal", fontsize=9, transform=ax.transAxes, weight='bold', style='italic')
-    plt.text(0.03, 0.89, "Vertices with at least 2 tracks", fontsize=9, transform=ax.transAxes)
+    plt.text(0.03, 0.89, "Z' (flat $p_T$, 427080)", fontsize=9, transform=ax.transAxes)
+    plt.text(0.03, 0.85, "Vertices with at least 2 tracks, jet_jf_sig3d", fontsize=9, transform=ax.transAxes)
 
-    #plt.savefig(outDir + "/" + figName + ".png", bbox_inches='tight', pad_inches=0.04)
     plt.savefig(outDir + "/" + figName + ".pdf", bbox_inches='tight', pad_inches=0.04)
 
 
 if __name__ == "__main__":
-    colourDict = colourTracks()
+    styleDict = styleTracks()
     inDir = args.workDir + 'dataFrames/'
     version = args.version
     tracks = args.tracks.split(':')
     outDir = args.workDir + 'plots/' + version + "/" + args.tracks.replace(":","_")
     if not (os.path.isdir(outDir)): os.makedirs(outDir)
 
-    jetVars = getDataFrames(args.workDir, version, tracks, "jetVars")
+    jetVars = getDataFrames(args.workDir, version, tracks, "jetVars", args.dictName)
     ROCVars = ['jet_jf_sig3d', 'jet_jf_nvtx', 'jet_LabDr_HadF']
     ROCValues = getROC(jetVars, ROCVars, 'jet_jf_sig3d', 0, 40, 'jet_jf_nvtx', 0, 50)
 
