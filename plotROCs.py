@@ -31,8 +31,9 @@ def configurePlots(jet1, jet2):
 
     return ax
 
-def plotROCs(ROCValues, tracks, jet1, jet2):
+def plotROCs(ROCValues, tracks, jet1, jet2, vtxQuery="", vtxLabel=""):
     figName = "ROC_" + jet1 + jet2
+    if vtxQuery != "": figName += "_" + vtxQuery.replace(" ",  "_")
     ax = configurePlots(jet1, jet2)
 
     for i in range(len(tracks)):
@@ -45,9 +46,16 @@ def plotROCs(ROCValues, tracks, jet1, jet2):
     plt.legend(bbox_to_anchor=[0.03, 0.65], loc='center left', labelspacing=0.3, facecolor='none', edgecolor='none', prop={'size': 8})
     plt.text(0.03, 0.93, "ATLAS Internal", fontsize=9, transform=ax.transAxes, weight='bold', style='italic')
     plt.text(0.03, 0.89, "Z' (flat $p_T$, 427080)", fontsize=9, transform=ax.transAxes)
-    plt.text(0.03, 0.85, "Vertices with at least 2 tracks, jet_jf_sig3d", fontsize=9, transform=ax.transAxes)
+    if vtxLabel != "": plt.text(0.03, 0.85, vtxLabel + ", jet_jf_sig3d", fontsize=9, transform=ax.transAxes)
 
     plt.savefig(outDir + "/" + figName + ".pdf", bbox_inches='tight', pad_inches=0.04)
+
+def plotJFROCs(vtxQuery, vtxLabel):
+    ROCVars = ['jet_jf_sig3d', vtxQuery.split(" ")[0], 'jet_LabDr_HadF']
+    ROCValues = getROC(jetVars, ROCVars, 'jet_jf_sig3d', 0, 40, vtxQuery, 50)
+
+    plotROCs(ROCValues, tracks, "b", "light", vtxQuery, vtxLabel)
+    plotROCs(ROCValues, tracks, "b", "c", vtxQuery, vtxLabel)
 
 
 if __name__ == "__main__":
@@ -59,11 +67,11 @@ if __name__ == "__main__":
     if not (os.path.isdir(outDir)): os.makedirs(outDir)
 
     jetVars = getDataFrames(args.workDir, version, tracks, "jetVars", args.dictName)
-    ROCVars = ['jet_jf_sig3d', 'jet_jf_nvtx', 'jet_LabDr_HadF']
-    ROCValues = getROC(jetVars, ROCVars, 'jet_jf_sig3d', 0, 40, 'jet_jf_nvtx', 0, 50)
 
-    plotROCs(ROCValues, tracks, "b", "light")
-    plotROCs(ROCValues, tracks, "b", "c")
-
-
-
+    vtxDict = {
+        'jet_jf_nvtx > 0': 'Vertices with at least 2 tracks',
+        'jet_jf_nvtx1t == 1': "Single-track vertices",
+        "jet_jf_nvtx1t >= 2": r'$\geq$ 2 single-tracks vertices',
+    }
+    for vtx, label in vtxDict.items():
+        plotJFROCs(vtx, label)

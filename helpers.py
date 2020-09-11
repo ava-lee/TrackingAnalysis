@@ -117,19 +117,19 @@ def newDataFrames(dataFrames, varNames):
         new_dfs[track] = new_df
     return new_dfs
 
-def getCutValues(jet_df, cutVarName, cutVarMin, cutVarMax, outVarName, outVarCut, npoints):
+def getCutValues(jet_df, cutVarName, cutVarMin, cutVarMax, outVarQuery, npoints):
     njets = len(jet_df.index)
     jet_df = jet_df[jet_df[cutVarName] >= cutVarMin]
     jet_values = []
     for i in range(npoints):
         x = cutVarMax / npoints
         cutValue = i * x
-        jetCut_df = jet_df[(jet_df[cutVarName] > cutValue) & (jet_df[outVarName] > outVarCut)]
+        jetCut_df = jet_df.query("("+ cutVarName + ">" + str(cutValue) + ") and (" + outVarQuery + ")")
         jet_values.append(len(jetCut_df.index) / njets)
 
     return jet_values
 
-def getROC(dataFrames, varNames, cutVarName, cutVarMin, cutVarMax, outVarName, outVarCut, npoints):
+def getROC(dataFrames, varNames, cutVarName, cutVarMin, cutVarMax, outVarQuery, npoints):
     ROC_dfs = newDataFrames(dataFrames, varNames)
     ROC_values = collections.OrderedDict()
     for track in ROC_dfs.keys():
@@ -138,7 +138,7 @@ def getROC(dataFrames, varNames, cutVarName, cutVarMin, cutVarMax, outVarName, o
         jets = {"b": 5, "c": 4, "light": 0}
         for jet in jets.keys():
             jet_df = track_df[track_df['jet_LabDr_HadF'] == jets[jet]]
-            jet_values = getCutValues(jet_df, cutVarName, cutVarMin, cutVarMax, outVarName, outVarCut, npoints)
+            jet_values = getCutValues(jet_df, cutVarName, cutVarMin, cutVarMax, outVarQuery, npoints)
             label = track + "_" + jet
             ROC_values[label] = jet_values
 
