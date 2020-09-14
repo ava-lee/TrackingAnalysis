@@ -48,7 +48,7 @@ def styleTracks():
             'pseudo': ["#17becf", "Pseudo"],
             'ideal': ["#ff7f0e", "Ideal"],
             'RF75': ["#2ca02c", "Nominal, no fakes"],
-            'loose': ["#1f77b4", "Nominal, removing fakes with_MVA (loose)"],
+            'loose': ["#1f77b4", "Nominal, removing fakes with MVA (loose)"],
             'tight': ["#8c564b", "Nominal, removing fakes with MVA (tight)"],
             'nom_replaceHFWithTruth': ["#9467bd", "Nominal, replace HF with pseudo"],
             'nom_replaceFRAGWithTruth': ["#7f7f7f", "Nominal, replace HF with pseudo"],
