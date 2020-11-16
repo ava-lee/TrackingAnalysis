@@ -70,8 +70,9 @@ if __name__ == "__main__":
 
     vtxDict = {
         'jet_jf_nvtx > 0': 'Vertices with at least 2 tracks',
-        'jet_jf_nvtx1t == 1': "Single-track vertices",
-        "jet_jf_nvtx1t >= 2": r'$\geq$ 2 single-tracks vertices',
+        'jet_jf_nvtx1t > 0': "Single-track vertices",
+        #'jet_jf_nvtx1t == 1': "Single-track vertices",
+        #"jet_jf_nvtx1t >= 2": r'$\geq$ 2 single-tracks vertices',
     }
     for vtx, label in vtxDict.items():
         plotJFROCs(vtx, label)
