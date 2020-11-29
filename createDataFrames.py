@@ -15,12 +15,6 @@ parser.add_argument('-w', "--workDir", dest='workDir', default='/Users/avalee/Tr
 parser.add_argument('-d' "--dict", dest="dict", default="jetVars", help="type of variables dictionary to save")#dictionary comment  is
 args = parser.parse_args()
 
-def getDict(inDir, version, track, varsName):
-    varsFile = inDir + version + '_' + track + '_' + varsName + '.pickle'
-    with open(varsFile, 'rb') as handle:
-        varsDict = pickle.load(handle)
-    
-    return varsDict
 
 def saveDataFrames(inDir, outDir, version, tracks, varsType):
     dfs = collections.OrderedDict()

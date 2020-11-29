@@ -12,7 +12,7 @@ parser.add_argument('-t', "--tracks", dest='tracks',
                     help='input track collections')
 parser.add_argument('-w', "--workDir", dest='workDir', default='/Users/avalee/TrackingAnalysis/',
                     help='working directory')
-parser.add_argument('-f', "--fileDict", dest="dictName", default="", help="filename of dataframes dictionary")
+parser.add_argument('-f', "--fileDict", dest="fileDict", default="", help="filename of dataframes dictionary")
 args = parser.parse_args()
 
 def configurePlots(jet1, jet2):
@@ -56,22 +56,21 @@ def plotJFROCs(vtxQuery, vtxLabel):
 
     plotROCs(ROCValues, tracks, "b", "light", vtxQuery, vtxLabel)
     plotROCs(ROCValues, tracks, "b", "c", vtxQuery, vtxLabel)
-
+    
 
 if __name__ == "__main__":
     styleDict = styleTracks()
-    inDir = args.workDir + 'dataFrames/'
     version = args.version
     tracks = args.tracks.split(':')
     outDir = args.workDir + 'plots/' + version + "/" + args.tracks.replace(":","_")
     if not (os.path.isdir(outDir)): os.makedirs(outDir)
 
-    jetVars = getDataFrames(args.workDir, version, tracks, "jetVars", args.dictName)
+    jetVars = getDataFrames(args.workDir, version, tracks, "jetVars", args.fileDict)
 
     vtxDict = {
         'jet_jf_nvtx > 0': 'Vertices with at least 2 tracks',
-        'jet_jf_nvtx1t == 1': "Single-track vertices",
-        "jet_jf_nvtx1t >= 2": r'$\geq$ 2 single-tracks vertices',
+        'jet_jf_nvtx1t > 0': "Single-track vertices",
+        #"jet_jf_nvtx1t >= 2": r'$\geq$ 2 single-tracks vertices',
     }
     for vtx, label in vtxDict.items():
         plotJFROCs(vtx, label)

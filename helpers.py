@@ -7,6 +7,13 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import matplotlib.ticker as ticker
 
+def getDict(inDir, version, track, varsName):
+    varsFile = inDir + version + '_' + track + '_' + varsName + '.pickle'
+    with open(varsFile, 'rb') as handle:
+        varsDict = pickle.load(handle)
+    
+    return varsDict
+
 def getDataFrames(workDir, version, tracks, varsType, dictName=""):
     fileName = workDir + 'dataFrames/'+ version+ "_all_" + varsType + "_dfs.pickle"
     if os.path.exists(fileName) == False:
@@ -47,9 +54,12 @@ def styleTracks():
             'nom': ["#000000", "Nominal"],
             'pseudo': ["#17becf", "Pseudo"],
             'ideal': ["#ff7f0e", "Ideal"],
-            'RF75': ["#2ca02c", "Nominal, no fakes"],
-            'loose': ["#1f77b4", "Nominal, removing fakes with MVA (loose)"],
-            'tight': ["#8c564b", "Nominal, removing fakes with MVA (tight)"],
+            'RF75': ["#2ca02c", "Nominal, no fakes (TMP > 0.75)"],
+            'RF75NB': ["#00ff00", "Remove non-B fakes (TMP < 0.75)"],
+            'loose': ["#76cfe3", "Nominal, removing fakes with MVA (loose)"],
+            'tight': ["#1900ff", "Nominal, removing fakes with MVA (tight)"],
+            'A': ["#ff0000", "Removing non-B fakes with MVAs (A)"],
+            'B': ["#fa9750", "Removing non-B fakes with MVAs (B)"],
             'nom_replaceHFWithTruth': ["#9467bd", "Nominal, replace HF with pseudo"],
             'nom_replaceFRAGWithTruth': ["#7f7f7f", "Nominal, replace HF with pseudo"],
             'nom_replaceFRAGHFWithTruth': ["#bcbd22", "Nominal, replace FRAG+HF with pseudo"],
@@ -143,3 +153,41 @@ def getROC(dataFrames, varNames, cutVarName, cutVarMin, cutVarMax, outVarQuery, 
             ROC_values[label] = jet_values
 
     return ROC_values
+
+def integrateHist(hist_freqs,integration_interval,x_domain,nbin):
+    dx=x_domain[1]-x_domain[0]
+    
+    # Get index from xMin to min and max of interval using proportion of interval to domain
+    i_min=int(round(nbin*(integration_interval[0]-x_domain[0])/dx)) 
+    i_max=int(round(nbin*(integration_interval[1]-x_domain[0])/dx)) 
+    
+    return hist_freqs[i_min:i_max].sum()
+
+# sign = -1 for decreasing fn and +1 for increasing fn
+def inverseFunction(y, function, x_domain, sign):
+    epsilon = 1e-7
+    x_max = x_domain[1]
+    x_min = x_domain [0] # Start testing with x value in middle
+    dx = x_max - x_min
+    y_diff = 1
+    while abs(y_diff) > epsilon and abs(dx) > epsilon:
+        x0 = 0.5*(x_max + x_min)
+        
+        y_test = function(x0)
+        y_diff = y - y_test
+        # If y is greater than y_test for increasing fn
+        # then increase x_min to x0 to decrease guessing gap
+        # If y is greater than y_test for decreasing fn
+        # then this would be negative
+        # x_min to x0 to decrease guessing gap
+        
+        if y_diff*sign > 0: # If y is greater than y_test
+            x_min = x0 # Increase x_min to 
+        if y_diff*sign <= 0:
+            x_max = x0
+        
+        dx = x_max - x_min
+        
+    return x0
+
+
