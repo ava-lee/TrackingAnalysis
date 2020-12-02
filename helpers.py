@@ -55,7 +55,9 @@ def styleTracks():
             'pseudo': ["#17becf", "Pseudo"],
             'ideal': ["#ff7f0e", "Ideal"],
 
-            'RF75': ["#2ca02c", "Nominal, no fakes (TMP > 0.75)"],
+            'nom_RF75': ["#2ca02c", "Nominal, no fakes (TMP > 0.75)"],
+            'nom_RF75_replaceFRAGWithTruth': ["#d62728", "Nominal, no fakes (TMP > 0.75), replace with pseudo"],
+            'nom_RF90': ["#e377c2", "Nominal, no fakes (TMP > 0.90)"],
             'RF75NB': ["#00ff00", "Remove non-B fakes (TMP < 0.75)"],
             'loose': ["#76cfe3", "Nominal, removing fakes with MVA (loose)"],
             'tight': ["#1900ff", "Nominal, removing fakes with MVA (tight)"],
@@ -86,6 +88,7 @@ def styleTracks():
     return styleDict
 
 def getRatio(hist1,hist2):
+    # basically dividing arrays
     hist = []
     for i in range(len(hist1)):
         if hist2[i] == 0:

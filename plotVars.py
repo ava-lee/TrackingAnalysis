@@ -71,12 +71,12 @@ if __name__ == "__main__":
     trackVars = getDataFrames(args.workDir, version, tracks, "trackVars")
     
     varTracksDict = {
-        'jet_trk_nPixSCT': [0, 14, 14, 'Number of pixel and SCT hits'],
-        'jet_trk_nsharedPixSCT': [0, 10, 10, 'Number of shared pixels and SCT hits'],
-        'jet_trk_nPixHits': [0, 10, 10, 'Number of pixel hits'],
-        'jet_trk_nSCTHits': [0, 14, 14, 'Number of SCT hits'],
-        'jet_trk_nsharedPixHits': [0, 10, 10, "Number of shared pixels"],
-        'jet_trk_nsharedSCTHits': [0, 10, 10, "Number of shared SCT"],
+        'jet_trk_nPixSCT': [(0, 14), 14, 'Number of pixel and SCT hits'],
+        'jet_trk_nsharedPixSCT': [(0, 14), 10, 'Number of shared pixels and SCT hits'],
+        'jet_trk_nPixHits': [(0, 10), 10, 'Number of pixel hits'],
+        'jet_trk_nSCTHits': [(0, 14), 14, 'Number of SCT hits'],
+        'jet_trk_nsharedPixHits': [(0, 10), 10, "Number of shared pixels"],
+        'jet_trk_nsharedSCTHits': [(0, 10), 10, "Number of shared SCT"],
         'jet_trk_nsplitPixHits': [0, 10, 10, "Number of split pixels"],
     }
 
