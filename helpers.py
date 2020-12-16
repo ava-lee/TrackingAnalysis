@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import matplotlib.ticker as ticker
 
-def getDict(inDir, version, track, varsName):
+def getDict(inDir, version, track, varsName, add_file=""):
     varsFile = inDir + version + '_' + track + '_' + varsName + '.pickle'
     with open(varsFile, 'rb') as handle:
         varsDict = pickle.load(handle)
@@ -59,11 +59,11 @@ def styleTracks():
             'nom_RF75': ["#2ca02c", "Nominal, no fakes (TMP > 0.75)"],
             'nom_RF75_replaceFRAGWithTruth': ["#d62728", "Nominal, no fakes (TMP > 0.75), replace with pseudo"],
             'nom_RF90': ["#e377c2", "Nominal, no fakes (TMP > 0.90)"],
-            'RF75NB': ["#00ff00", "Remove non-B fakes (TMP < 0.75)"],
+            'nom_RF75NB': ["#00ff00", "Remove non-B fakes (TMP < 0.75)"],
             'loose': ["#76cfe3", "Nominal, removing fakes with MVA (loose)"],
             'tight': ["#1900ff", "Nominal, removing fakes with MVA (tight)"],
-            'A': ["#ff0000", "Removing non-B fakes with MVAs (A)"],
-            'B': ["#fa9750", "Removing non-B fakes with MVAs (B)"],
+            'nom_RFNBMVA_A': ["#ff0000", "Removing non-B fakes with MVAs (A)"],
+            'nom_RFNBMVA_B': ["#fa9750", "Removing non-B fakes with MVAs (B)"],
 
               #'RF75': ["#2ca02c", "Nominal, no fakes"],
             #'loose': ["#1f77b4", "Nominal, removing fakes with MVA (loose)"],
