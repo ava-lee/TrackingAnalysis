@@ -54,7 +54,8 @@ def styleTracks():
             'nom': ["#000000", "Nominal"],
             'pseudo': ["#17becf", "Pseudo"],
             'ideal': ["#ff7f0e", "Ideal"],
-            'ext': ["#fc0303", "Extended Z' (with pileup)"],
+            '427081_nom': ["#fc0303", "Extended Z' (with pileup)"],
+            'default': ["#17becf", "Official FTAG"],
 
             'nom_RF75': ["#2ca02c", "Nominal, no fakes (TMP > 0.75)"],
             'nom_RF75_replaceFRAGWithTruth': ["#d62728", "Nominal, no fakes (TMP > 0.75), replace with pseudo"],
