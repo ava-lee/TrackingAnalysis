@@ -58,6 +58,8 @@ def styleTracks():
             'default': ["#17becf", "Official FTAG"],
             'nom-leaky': ["#2ca02c", "Nominal, Leaky ReLU"],
             'nom-selu': ["#e377c2", "Nominal, SELU"],
+            'nom-CLR': ["#00ff00", "Nominal, CLR"],
+            'nom-expCLR': ["#fa9750", "Nominal, Exp. CLR"],
 
             'nom_RF75': ["#2ca02c", "Nominal, no fakes (TMP > 0.75)"],
             'nom_RF75_replaceFRAGWithTruth': ["#d62728", "Nominal, no fakes (TMP > 0.75), replace with pseudo"],
